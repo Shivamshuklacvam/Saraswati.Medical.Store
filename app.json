@@ -1,27 +1,26 @@
 {
   "expo": {
-    "name": "SaraswatiMedical",
-    "slug": "SaraswatiMedical",
+    "name": "Saraswati Medical",
+    "slug": "saraswati-medical",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F5F0EB"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.saraswatimedical.app"
     },
     "android": {
+      "package": "com.saraswatimedical.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+        "backgroundColor": "#7A9E7E"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
