@@ -40,7 +40,7 @@ export interface Order {
     gst: number;
     deliveryFee: number;
     status: 'pending' | 'confirmed' | 'ready' | 'out_for_delivery' | 'delivered' | 'cancelled';
-    paymentMethod: 'cod';
+    paymentMethod: 'cod' | 'upi' | 'card';
     deliveryAddress: Address;
     serviceType: 'home_delivery' | 'store_takeaway';
     prescriptionId?: string;

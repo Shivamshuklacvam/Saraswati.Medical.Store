@@ -86,6 +86,14 @@ export const updateOrderStatus = async (id: string, status: string) => {
     return updateDoc(doc(db, 'orders', id), { status });
 };
 
+export const updateOrder = async (id: string, data: Partial<Order>) => {
+    return updateDoc(doc(db, 'orders', id), data);
+};
+
+export const deleteOrder = async (id: string) => {
+    return deleteDoc(doc(db, 'orders', id));
+};
+
 // ─── USER PROFILE ────────────────────────────────────────────────────────────
 
 export const getUserProfile = async (uid: string): Promise<User | null> => {

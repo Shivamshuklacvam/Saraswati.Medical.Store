@@ -30,8 +30,15 @@ import NotificationsScreen from './screens/NotificationsScreen';
 import HelpSupportScreen from './screens/HelpSupportScreen';
 
 // Admin Screens
-import AdminDashboardScreen from './screens/admin/AdminDashboardScreen';
-import AdminInventoryScreen from './screens/admin/AdminInventoryScreen';
+import {
+  AdminDashboardScreen,
+  AdminInventoryScreen,
+  AdminAddProductScreen,
+  AdminScanBillScreen,
+  AdminSalesDetailsScreen,
+  AdminManageOrdersScreen,
+  AdminProfileScreen
+} from './screens/admin';
 
 const Stack = createNativeStackNavigator();
 
@@ -67,9 +74,15 @@ function RootNavigator() {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
         <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
-        <Stack.Screen name="AdminInventory" component={AdminInventoryScreen} />
+        <Stack.Screen name="AdminInventory" component={AdminInventoryScreen as any} />
+        <Stack.Screen name="AdminAddProduct" component={AdminAddProductScreen as any} />
+        <Stack.Screen name="AdminScanBill" component={AdminScanBillScreen as any} />
+        <Stack.Screen name="AdminSalesDetails" component={AdminSalesDetailsScreen as any} />
+        <Stack.Screen name="AdminManageOrders" component={AdminManageOrdersScreen as any} />
+        <Stack.Screen name="AdminProfile" component={AdminProfileScreen} />
         <Stack.Screen name="Search" component={SearchScreen as any} />
         <Stack.Screen name="PrescriptionUpload" component={PrescriptionUploadScreen} />
+        <Stack.Screen name="OrderTracking" component={OrderTrackingScreen as any} />
       </Stack.Navigator>
     );
   }

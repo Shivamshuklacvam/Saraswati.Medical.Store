@@ -60,7 +60,7 @@ export default function OrderTrackingScreen({ navigation, route }: Props) {
 
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backBtn}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <Text style={styles.backIcon}>←</Text>
                 </TouchableOpacity>
                 <View>
@@ -159,8 +159,8 @@ export default function OrderTrackingScreen({ navigation, route }: Props) {
 
             {/* Action buttons */}
             <View style={styles.actionBtns}>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('Home')}>
-                    <Text style={styles.actionBtnText}>🛒 Continue Shopping</Text>
+                <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('MyOrders')}>
+                    <Text style={styles.actionBtnText}>📋 My Orders</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.actionBtn, styles.actionBtnPrimary]} onPress={() => navigation.navigate('Search')}>
                     <Text style={[styles.actionBtnText, { color: '#fff' }]}>📋 Track Refill</Text>

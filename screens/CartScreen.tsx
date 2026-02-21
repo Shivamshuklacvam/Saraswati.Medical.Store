@@ -61,7 +61,7 @@ export default function CartScreen({ navigation }: Props) {
                 needsConsultation: prescriptionMode === 'consult',
             });
             clearCart();
-            navigation.navigate('OrderTracking', { orderId: order.id });
+            navigation.replace('OrderTracking', { orderId: order.id });
         } catch (e: any) {
             Alert.alert('Order Failed', e.message || 'Please try again');
         } finally {

@@ -256,30 +256,33 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
 
             <View style={styles.bottomBar}>
                 {cartItem ? (
-                    <View style={styles.bottomSplit}>
-                        <View style={styles.bottomQtySelectorSplit}>
+                    <View style={styles.inCartContainer}>
+                        <View style={styles.qtyPill}>
                             <TouchableOpacity
-                                style={styles.bottomQtyBtn}
+                                style={styles.qtyPillBtn}
                                 onPress={() => updateQuantity(productId, cartItem.quantity - 1)}
                             >
-                                <Text style={styles.bottomQtyBtnText}>−</Text>
+                                <Text style={styles.qtyPillBtnText}>−</Text>
                             </TouchableOpacity>
-                            <View style={styles.bottomQtyValueBox}>
-                                <Text style={styles.bottomQtyValue}>{cartItem.quantity}</Text>
-                                <Text style={styles.bottomQtyLabel}>Units</Text>
+                            <View style={styles.qtyPillValueBox}>
+                                <Text style={styles.qtyPillValue}>{cartItem.quantity}</Text>
+                                <Text style={styles.qtyPillLabel}>Units in Basket</Text>
                             </View>
                             <TouchableOpacity
-                                style={styles.bottomQtyBtn}
+                                style={styles.qtyPillBtn}
                                 onPress={() => updateQuantity(productId, cartItem.quantity + 1)}
                             >
-                                <Text style={styles.bottomQtyBtnText}>+</Text>
+                                <Text style={styles.qtyPillBtnText}>+</Text>
                             </TouchableOpacity>
                         </View>
                         <TouchableOpacity
-                            style={styles.btnGoToCart}
+                            style={styles.btnGoToCartPremium}
                             onPress={() => navigation.navigate('Cart')}
                         >
-                            <Text style={styles.btnGoToCartText}>GO TO CART →</Text>
+                            <Text style={styles.btnGoToCartTextPremium}>GO TO CART →</Text>
+                            <View style={styles.btnGoToPrice}>
+                                <Text style={styles.btnGoToPriceText}>₹{(product.price * cartItem.quantity).toFixed(2)}</Text>
+                            </View>
                         </TouchableOpacity>
                     </View>
                 ) : (
@@ -363,11 +366,11 @@ const styles = StyleSheet.create({
     bottomBar: {
         position: 'absolute', bottom: 0, left: 0, right: 0,
         backgroundColor: COLORS.white,
-        padding: 20, paddingBottom: 35, borderTopWidth: 1.5, borderColor: COLORS.borderLight,
+        padding: 16, paddingBottom: 34, borderTopWidth: 1.5, borderColor: COLORS.borderLight,
         ...SHADOW.strong
     },
     btnPrimary: {
-        height: 60, borderRadius: RADIUS.md, backgroundColor: COLORS.primary,
+        height: 56, borderRadius: RADIUS.md, backgroundColor: COLORS.primary,
         flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20
     },
     btnPrimaryText: { color: COLORS.white, fontSize: 16, fontWeight: '900', flex: 1, textAlign: 'right' },
@@ -375,13 +378,24 @@ const styles = StyleSheet.create({
     btnPriceText: { fontSize: 18, fontWeight: '900', color: COLORS.white },
     btnPriceSub: { fontSize: 10, color: COLORS.white, opacity: 0.8 },
 
-    bottomQtySelector: {
-        height: 60, borderRadius: RADIUS.md, backgroundColor: COLORS.primary,
-        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10
+    inCartContainer: { gap: 12 },
+    qtyPill: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        backgroundColor: COLORS.primarySurface, borderRadius: RADIUS.md,
+        padding: 4, borderWidth: 1, borderColor: COLORS.primary + '30'
     },
-    bottomQtyBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-    bottomQtyBtnText: { fontSize: 28, color: COLORS.white, fontWeight: '300' },
-    bottomQtyValueBox: { alignItems: 'center' },
-    bottomQtyValue: { fontSize: 20, fontWeight: '900', color: COLORS.white },
-    bottomQtyLabel: { fontSize: 10, color: COLORS.white, opacity: 0.8 },
+    qtyPillBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: COLORS.white, ...SHADOW.small },
+    qtyPillBtnText: { fontSize: 24, color: COLORS.primary, fontWeight: '300' },
+    qtyPillValueBox: { alignItems: 'center' },
+    qtyPillValue: { fontSize: 18, fontWeight: '900', color: COLORS.primary },
+    qtyPillLabel: { fontSize: 9, color: COLORS.primary, opacity: 0.7, marginTop: -2 },
+
+    btnGoToCartPremium: {
+        height: 56, borderRadius: RADIUS.md, backgroundColor: COLORS.primary,
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20,
+        ...SHADOW.card
+    },
+    btnGoToCartTextPremium: { color: COLORS.white, fontSize: 16, fontWeight: '900', flex: 1 },
+    btnGoToPrice: { backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
+    btnGoToPriceText: { color: COLORS.white, fontSize: 14, fontWeight: '800' },
 });
