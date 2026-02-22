@@ -1,30 +1,32 @@
 // Design tokens for Saraswati Medical Store
 export const COLORS = {
     // Brand Palette from Design Reference
-    primary: '#A8B5A0',      // Sage Green
+    primary: '#A3B19B',      // Sage Green
     onPrimary: '#FFFFFF',
-    secondary: '#D4A5A5',    // Dusty Rose
+    secondary: '#D6AEAC',    // Blush Pink
     onSecondary: '#FFFFFF',
-    tertiary: '#E8DCC4',     // Beige
-    onTertiary: '#1A1710',
-    background: '#FAF7F2',   // Warm Off-white
+    tertiary: '#E5D5C5',     // Beige (for icons/backgrounds)
+    onTertiary: '#2D2A26',
+    background: '#FAF8F5',   // Warm Off-white / Cream
     surface: '#FFFFFF',
-    surfaceAlt: '#F7F3EF',
+    surfaceAlt: '#FDFBF9',
     successLight: '#E8F5E9',
+    warningLight: '#FFF9F0',
+    errorLight: '#FEEBEE',
 
     // Derived/Legacy compatibility
-    primaryLight: '#C3CEBD',
-    primaryDark: '#7D8C75',
-    primarySurface: '#F0F4EF',
+    primaryLight: '#C6D2BF',
+    primaryDark: '#798771',
+    primarySurface: '#F3F6F1',
 
     // Emphasis & Common
-    black: '#1A1710',
+    black: '#2D2A26',
     white: '#FFFFFF',
 
     // Text
-    textPrimary: '#1A1710',
-    textSecondary: '#5A5854',
-    textMuted: '#9A9894',
+    textPrimary: '#2D2A26',  // Dark Charcoal
+    textSecondary: '#7A7571',
+    textMuted: '#AFAAA5',
     textOnPrimary: '#FFFFFF',
 
     // Status
@@ -34,7 +36,7 @@ export const COLORS = {
 
     // UI Elements
     border: '#E8E2DD',
-    borderLight: '#F3EFEC',
+    borderLight: '#F5EFEA',
 };
 
 export const FONTS = {
