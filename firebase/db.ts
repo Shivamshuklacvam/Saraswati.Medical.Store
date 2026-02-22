@@ -12,7 +12,7 @@ import {
     deleteDoc,
     Timestamp,
 } from 'firebase/firestore';
-import { Product, Order, CartItem, User, Subscription, Prescription, AppNotification } from '../types';
+import { Product, Order, CartItem, User, Subscription, Prescription, AppNotification, Medication, MedicationLog } from '../types';
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
 
@@ -164,4 +164,52 @@ export const getNotifications = async (userId: string): Promise<AppNotification[
 
 export const markNotificationRead = async (id: string) => {
     return updateDoc(doc(db, 'notifications', id), { read: true });
+};
+
+// ─── MEDICATION TRACKER ───────────────────────────────────────────────────────
+
+export const getMedications = async (userId: string): Promise<Medication[]> => {
+    const q = query(
+        collection(db, 'medications'),
+        where('userId', '==', userId),
+        orderBy('createdAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Medication));
+};
+
+export const addMedication = async (med: Omit<Medication, 'id' | 'createdAt'>) => {
+    return addDoc(collection(db, 'medications'), {
+        ...med,
+        createdAt: Timestamp.now(),
+    });
+};
+
+export const deleteMedication = async (id: string) => {
+    return deleteDoc(doc(db, 'medications', id));
+};
+
+export const updateMedicationInventory = async (id: string, newTotal: number) => {
+    return updateDoc(doc(db, 'medications', id), { totalPills: newTotal });
+};
+
+export const getMedicationLogs = async (userId: string, date: string): Promise<MedicationLog[]> => {
+    const q = query(
+        collection(db, 'intake_logs'),
+        where('userId', '==', userId),
+        where('date', '==', date)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as MedicationLog));
+};
+
+export const logMedicationIntake = async (log: Omit<MedicationLog, 'id' | 'timestamp'>) => {
+    return addDoc(collection(db, 'intake_logs'), {
+        ...log,
+        timestamp: Timestamp.now(),
+    });
+};
+
+export const updateMedicationLogStatus = async (id: string, status: 'taken' | 'skipped' | 'missed') => {
+    return updateDoc(doc(db, 'intake_logs', id), { status });
 };

@@ -28,6 +28,8 @@ import SavedPrescriptionsScreen from './screens/SavedPrescriptionsScreen';
 import PaymentSettingsScreen from './screens/PaymentSettingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import HelpSupportScreen from './screens/HelpSupportScreen';
+import MedicationTrackerScreen from './screens/MedicationTrackerScreen';
+import AddMedicationScreen from './screens/AddMedicationScreen';
 
 // Admin Screens
 import {
@@ -106,6 +108,8 @@ function RootNavigator() {
       <Stack.Screen name="PaymentSettings" component={PaymentSettingsScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+      <Stack.Screen name="MedicationTracker" component={MedicationTrackerScreen} />
+      <Stack.Screen name="AddMedication" component={AddMedicationScreen} />
     </Stack.Navigator>
   );
 }

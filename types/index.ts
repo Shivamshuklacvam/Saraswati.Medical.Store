@@ -106,3 +106,30 @@ export interface AppNotification {
     read: boolean;
     createdAt: any;
 }
+
+// ─── MEDICATION TRACKER ───────────────────────────────────────────────────────
+export interface Medication {
+    id: string;
+    userId: string;
+    name: string;
+    dosage: string;
+    instruction: string; // e.g., '1 pill'
+    totalPills: number; // For inventory alerts
+    frequency: 'daily' | 'as_needed' | 'specific_days';
+    schedule: {
+        morning: boolean;
+        afternoon: boolean;
+        evening: boolean;
+    };
+    createdAt: any;
+}
+
+export interface MedicationLog {
+    id: string;
+    userId: string;
+    medicationId: string;
+    date: string; // Format: YYYY-MM-DD
+    timeOfDay: 'morning' | 'afternoon' | 'evening';
+    status: 'taken' | 'skipped' | 'missed';
+    timestamp: any;
+}

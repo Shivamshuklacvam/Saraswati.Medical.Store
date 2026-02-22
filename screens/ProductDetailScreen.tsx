@@ -73,10 +73,6 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
             packSize: product.packSize,
             requiresPrescription: product.requiresPrescription
         });
-        Alert.alert('Added to Cart!', `${product.name} × ${quantity} added`, [
-            { text: 'Continue Shopping', style: 'cancel' },
-            { text: 'Go to Cart', onPress: () => navigation.navigate('Cart') },
-        ]);
     };
 
     const handleSubscribe = async () => {

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
     View, Text, StyleSheet, ScrollView, TouchableOpacity,
-    TextInput, FlatList, ActivityIndicator, Dimensions, Image
+    ActivityIndicator, Dimensions, NativeSyntheticEvent, NativeScrollEvent
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -23,11 +23,65 @@ const CATEGORIES = [
     { name: 'Wellness', icon: '🌿', cat: 'Wellness' },
 ];
 
+const CAROUSEL_DATA = [
+    {
+        id: '1',
+        tag: 'NEW ARRIVAL',
+        title: 'Gentle Baby Care',
+        subtitle: 'Pure & safe for your little ones',
+        colors: ['#C1CCC0', '#E5E2D9'] as const,
+        btnText: 'Explore Now',
+        category: 'Baby Care',
+        tagColor: COLORS.primary
+    },
+    {
+        id: '2',
+        tag: 'SPECIAL OFFER',
+        title: 'Flat 20% Off',
+        subtitle: 'On premium wellness products',
+        colors: ['#D6AEAC', '#F2E4E4'] as const,
+        btnText: 'Shop Sale',
+        category: 'Wellness',
+        tagColor: '#8B5A58'
+    },
+    {
+        id: '3',
+        tag: 'ANNOUNCEMENT',
+        title: 'Free Delivery',
+        subtitle: 'On all orders above ₹500 today',
+        colors: ['#E5D5C5', '#F5EEE6'] as const,
+        btnText: 'Order Now',
+        category: null,
+        tagColor: '#8B6A4C'
+    }
+];
+
 export default function HomeScreen({ navigation }: Props) {
     const { userProfile } = useAuth();
     const { totalItems } = useCart();
     const [trending, setTrending] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeBanner, setActiveBanner] = useState(0);
+    const [intakeLogged, setIntakeLogged] = useState(false);
+    const scrollRef = useRef<ScrollView>(null);
+
+    const onBannerScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const slideSize = event.nativeEvent.layoutMeasurement.width;
+        const index = event.nativeEvent.contentOffset.x / slideSize;
+        setActiveBanner(Math.round(index));
+    };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (scrollRef.current) {
+                const nextIndex = (activeBanner + 1) % CAROUSEL_DATA.length;
+                scrollRef.current.scrollTo({ x: nextIndex * (width - 40), animated: true });
+                setActiveBanner(nextIndex);
+            }
+        }, 10000); // 10 seconds
+
+        return () => clearInterval(interval);
+    }, [activeBanner]);
 
     useEffect(() => {
         getProducts()
@@ -74,31 +128,54 @@ export default function HomeScreen({ navigation }: Props) {
                     </TouchableOpacity>
                 </View>
 
-                {/* Hero Banner Area (Mocked with gradient to simulate photo) */}
+                {/* Hero Banner Area (Carousel) */}
                 <View style={styles.heroContainer}>
-                    <LinearGradient
-                        colors={['#C1CCC0', '#E5E2D9']}
-                        start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                        style={styles.heroBanner}
+                    <ScrollView
+                        ref={scrollRef}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        onScroll={onBannerScroll}
+                        scrollEventThrottle={16}
                     >
-                        <View style={styles.heroTag}>
-                            <Text style={styles.heroTagText}>NEW ARRIVAL</Text>
-                        </View>
-                        <Text style={styles.heroTitle}>Gentle Baby Care</Text>
-                        <Text style={styles.heroSubTitle}>Pure & safe for your little ones</Text>
-                        <TouchableOpacity style={styles.heroBtn} onPress={() => navigation.navigate('Search', { category: 'Baby Care' })}>
-                            <Text style={styles.heroBtnText}>Explore Now</Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
+                        {CAROUSEL_DATA.map((item) => (
+                            <View key={item.id} style={{ width: width - 40 }}>
+                                <LinearGradient
+                                    colors={item.colors}
+                                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                                    style={styles.heroBanner}
+                                >
+                                    <View style={styles.heroTag}>
+                                        <Text style={[styles.heroTagText, { color: item.tagColor }]}>{item.tag}</Text>
+                                    </View>
+                                    <Text style={styles.heroTitle}>{item.title}</Text>
+                                    <Text style={styles.heroSubTitle}>{item.subtitle}</Text>
+                                    <TouchableOpacity
+                                        style={styles.heroBtn}
+                                        onPress={() => item.category ? navigation.navigate('Search', { category: item.category }) : navigation.navigate('Cart')}
+                                    >
+                                        <Text style={styles.heroBtnText}>{item.btnText}</Text>
+                                    </TouchableOpacity>
+                                </LinearGradient>
+                            </View>
+                        ))}
+                    </ScrollView>
+
+                    {/* Pagination Dots */}
+                    <View style={styles.paginationContainer}>
+                        {CAROUSEL_DATA.map((_, i) => (
+                            <View key={i} style={[styles.dot, activeBanner === i ? styles.activeDot : {}]} />
+                        ))}
+                    </View>
                 </View>
 
                 {/* Quick Actions (Circular Grid) */}
                 <View style={styles.quickActionsRow}>
-                    <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('MyOrders')}>
+                    <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('MedicationTracker')}>
                         <View style={[styles.actionCircle, { backgroundColor: COLORS.tertiary }]}>
-                            <Feather name="book-open" size={22} color={COLORS.black} />
+                            <Feather name="activity" size={22} color={COLORS.black} />
                         </View>
-                        <Text style={styles.actionLabel}>Prescription</Text>
+                        <Text style={styles.actionLabel}>Tracker</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.actionItem} onPress={() => { }}>
                         <View style={[styles.actionCircle, { backgroundColor: COLORS.secondary }]}>
@@ -151,7 +228,7 @@ export default function HomeScreen({ navigation }: Props) {
                         <ActivityIndicator color={COLORS.primary} style={{ marginTop: 20 }} />
                     ) : (
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trendingScroll}>
-                            {trending.map(product => <TrendingProductCard key={product.id} product={product} navigation={navigation} />)}
+                            {trending.map(product => <TrendingProductCard key={`trending-${product.id}`} product={product} navigation={navigation} />)}
 
                             {/* Dummy Card for visual padding if backend lacks items */}
                             {trending.length === 0 && (
@@ -171,32 +248,86 @@ export default function HomeScreen({ navigation }: Props) {
                     )}
                 </View>
 
-                {/* Health Insights Card */}
+                {/* Top Rated Wellness */}
+                <View style={styles.section}>
+                    <View style={styles.sectionHeaderRow}>
+                        <Text style={styles.sectionTitle}>Top Rated Wellness</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+                            <Text style={styles.seeAllText}>View More</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {loading ? (
+                        <ActivityIndicator color={COLORS.primary} style={{ marginTop: 20 }} />
+                    ) : (
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.trendingScroll}>
+                            {[...trending].reverse().map(product => <TrendingProductCard key={`wellness-${product.id}`} product={product} navigation={navigation} />)}
+
+                            {/* Dummy Card for visual padding if backend lacks items */}
+                            {trending.length === 0 && (
+                                <View style={styles.productCard}>
+                                    <View style={styles.productImagePreview}><Text style={{ fontSize: 30 }}>💊</Text></View>
+                                    <Text style={styles.productName}>Multivitamin</Text>
+                                    <Text style={styles.productBrand}>Nutrilite</Text>
+                                    <View style={styles.productBottomRow}>
+                                        <Text style={styles.productPrice}>$18.00</Text>
+                                        <TouchableOpacity style={styles.productAddBtn}>
+                                            <Feather name="plus" size={16} color={COLORS.white} />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            )}
+                        </ScrollView>
+                    )}
+                </View>
+
+                {/* Interactive Medication Tracker */}
                 <View style={[styles.section, { marginTop: 10 }]}>
-                    <View style={styles.insightsCard}>
-                        <View style={styles.insightsHeader}>
-                            <View>
-                                <Text style={styles.insightsTitle}>Your Health Insights</Text>
-                                <Text style={styles.insightsSub}>Refill reminders & wellness score</Text>
+                    <View style={styles.trackerCard}>
+                        <View style={styles.trackerHeader}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.trackerTitle}>Medication Tracker</Text>
+                                <Text style={styles.trackerSub} numberOfLines={1}>Vitamin C - 500mg</Text>
                             </View>
-                            <Feather name="percent" size={20} color={COLORS.primary} />
-                        </View>
-
-                        {/* Faux graph area */}
-                        <View style={styles.graphContainer}>
-                            {/* Faux curve using view styling */}
-                            <View style={styles.graphCurve} />
-                            <View style={styles.graphLabels}>
-                                {['M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-                                    <Text key={i} style={styles.graphDay}>{d}</Text>
-                                ))}
+                            <View style={styles.trackerBadge}>
+                                <Text style={styles.trackerBadgeText}>12 Doses Left</Text>
                             </View>
                         </View>
 
-                        <View style={styles.insightsFooter}>
-                            <Text style={styles.insightsFooterText}>Refill due in 3 days</Text>
-                            <Text style={styles.insightsScore}>95%</Text>
+                        <View style={styles.trackerDaysRow}>
+                            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => {
+                                const isToday = index === 3; // Mock Thursday as today
+                                const isPast = index < 3;
+
+                                return (
+                                    <View key={index} style={styles.trackerDayCol}>
+                                        <Text style={[styles.trackerDayText, isToday && styles.trackerDayTextActive]}>{day}</Text>
+                                        <View style={[
+                                            styles.trackerCircle,
+                                            isPast || (isToday && intakeLogged) ? styles.trackerCircleDone :
+                                                isToday ? styles.trackerCircleToday : styles.trackerCircleFuture
+                                        ]}>
+                                            {(isPast || (isToday && intakeLogged)) && <Feather name="check" size={12} color={COLORS.white} />}
+                                        </View>
+                                    </View>
+                                );
+                            })}
                         </View>
+
+                        {!intakeLogged ? (
+                            <TouchableOpacity
+                                style={styles.trackerLogBtn}
+                                onPress={() => setIntakeLogged(true)}
+                            >
+                                <Feather name="check-circle" size={16} color={COLORS.white} />
+                                <Text style={styles.trackerLogBtnText}>Log Today's Intake</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <View style={styles.trackerLoggedState}>
+                                <Feather name="check-circle" size={16} color={COLORS.success} />
+                                <Text style={styles.trackerLoggedText}>Intake logged for today. Great job!</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -313,6 +444,9 @@ const styles = StyleSheet.create({
     heroSubTitle: { fontSize: 13, color: '#5A6F5A', marginBottom: 16, maxWidth: '60%' },
     heroBtn: { backgroundColor: COLORS.black, alignSelf: 'flex-start', paddingHorizontal: 16, paddingVertical: 10, borderRadius: RADIUS.full },
     heroBtnText: { color: COLORS.white, fontSize: 12, fontWeight: '600' },
+    paginationContainer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 12, gap: 6 },
+    dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#E0DCD3' },
+    activeDot: { width: 14, height: 6, backgroundColor: COLORS.primary },
 
     // Quick Actions
     quickActionsRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 30, marginBottom: 40 },
@@ -362,27 +496,31 @@ const styles = StyleSheet.create({
     qtyBtnXs: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
     qtyTextXs: { color: COLORS.white, fontSize: 13, fontWeight: '700', marginHorizontal: 2 },
 
-    // Insights Card
-    insightsCard: {
+    // Tracker Card
+    trackerCard: {
         marginHorizontal: 20, backgroundColor: COLORS.surfaceAlt, borderRadius: RADIUS.xl,
-        padding: 24, borderWidth: 1, borderColor: '#F2EBE3'
+        padding: 20, borderWidth: 1, borderColor: '#F2EBE3',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.02, shadowRadius: 8, elevation: 1
     },
-    insightsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 25 },
-    insightsTitle: { fontSize: 16, fontWeight: '700', color: COLORS.black, marginBottom: 4 },
-    insightsSub: { fontSize: 12, color: COLORS.textSecondary },
+    trackerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
+    trackerTitle: { fontSize: 16, fontWeight: '700', color: COLORS.black, marginBottom: 4 },
+    trackerSub: { fontSize: 13, color: COLORS.textSecondary, fontWeight: '500' },
+    trackerBadge: { backgroundColor: '#F0F4EE', paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.sm },
+    trackerBadgeText: { fontSize: 10, fontWeight: '700', color: COLORS.primary },
 
-    graphContainer: { height: 100, marginBottom: 20, position: 'relative', overflow: 'hidden' },
-    graphCurve: {
-        position: 'absolute', bottom: 20, left: -20, right: -20, height: 70,
-        backgroundColor: '#E8ECDF', borderTopLeftRadius: 100, borderTopRightRadius: 50,
-        opacity: 0.8
-    },
-    graphLabels: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between' },
-    graphDay: { fontSize: 10, color: COLORS.textMuted, fontWeight: '600' },
+    trackerDaysRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, paddingHorizontal: 4 },
+    trackerDayCol: { alignItems: 'center', gap: 8 },
+    trackerDayText: { fontSize: 12, color: COLORS.textMuted, fontWeight: '600' },
+    trackerDayTextActive: { color: COLORS.black, fontWeight: '800' },
+    trackerCircle: { width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+    trackerCircleDone: { backgroundColor: COLORS.primary },
+    trackerCircleToday: { backgroundColor: COLORS.white, borderWidth: 2, borderColor: COLORS.primary },
+    trackerCircleFuture: { backgroundColor: '#F0EFEA', borderWidth: 1, borderColor: '#E5DED5' },
 
-    insightsFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    insightsFooterText: { fontSize: 13, color: '#D6AEAC', fontWeight: '600' },
-    insightsScore: { fontSize: 18, fontWeight: '800', color: COLORS.black },
+    trackerLogBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.black, paddingVertical: 14, borderRadius: RADIUS.full },
+    trackerLogBtnText: { color: COLORS.white, fontSize: 13, fontWeight: '700' },
+    trackerLoggedState: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#EDF3EC', paddingVertical: 14, borderRadius: RADIUS.full, borderWidth: 1, borderColor: '#DCE5DB' },
+    trackerLoggedText: { color: '#4A5B46', fontSize: 12, fontWeight: '600' },
 
     // Bottom Banner
     bottomBannerContainer: {
